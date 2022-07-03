@@ -7,7 +7,7 @@ const jwtAuthorizer = async (req, res, next)=>{
   console.log('JwtAuthorizer: ', {jwtToken});
   try{
     const jwtData = await jwtVerify(jwtToken);
-    console.log(jwtData);
+    
     req.user = jwtData;
     return next();
   } catch (ex) {
