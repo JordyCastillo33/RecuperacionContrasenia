@@ -8,6 +8,8 @@ user.init();
 
 const {jwtSign} = require('../../../../libs/security');
 
+
+
 router.post('/login', async (req, res)=>{
   try {
     const {email, password} = req.body;
@@ -16,8 +18,14 @@ router.post('/login', async (req, res)=>{
       console.error('security login: ', {error:`Credenciales para usuario ${userData._id} ${userData.email} incorrectas.`});
       return res.status(403).json({ "error": "Credenciales no Válidas" });
     }
+   
     const {password: passwordDb, created, updated, ...jwtUser} = userData;
+
+
     const jwtToken = await jwtSign({jwtUser, generated: new Date().getTime()});
+
+  
+
     return res.status(200).json({token: jwtToken});
   } catch (ex) {
     console.error('security login: ', {ex});

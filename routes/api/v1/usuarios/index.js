@@ -32,12 +32,30 @@ router.get('/all', async (req, res) => {
 router.get('/byid/:codigo', async (req, res) => {
   try {
     const { codigo } = req.params;
-    if (!(/^(\d+)|([\da-f]{24}$/).test(codigo)) {
+    if (!(/^(\d+)|([\da-f]{24})$/.test(codigo))){
       return res.status(400).json({
         error: 'Se espera un codigo numérico'
       });
     }
     const registro = await user.getUsuarioById({ codigo });
+    return res.status(200).json(registro);
+  } catch (ex) {
+    console.error(ex);
+    return res.status(501).json({ error: 'Error al procesar solicitud.' });
+  }
+});
+
+router.get('/bycorreo/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+  
+    if (/^\s*$/.test(email)){
+      return res.status(400).json({
+        error: 'Se espera un correo'
+      });
+    }
+    const registro = await user.getUsuarioByEmail({email});
+    console.log(registro)
     return res.status(200).json(registro);
   } catch (ex) {
     console.error(ex);
@@ -95,10 +113,10 @@ router.post('/new', async (req, res) => {
 router.put('/update/:codigo', async (req, res) => {
   try {
     const { codigo } = req.params;
-    if (!(/^\d+$/.test(codigo))) {
+    if (!(/^(\d+)|([\da-f]{24})$/.test(codigo))){
       return res.status(400).json({ error: 'El codigo debe ser un dígito válido.' });
     }
-    const { nombre, password,  avatar, estado } = req.body;
+    const { nombre, password,  avatar, estado, email } = req.body;
 
     if (/^\s*$/.test(nombre)) {
       return res.status(400).json({
@@ -127,7 +145,8 @@ router.put('/update/:codigo', async (req, res) => {
       avatar,
       password,
       estado,
-      codigo });
+      codigo,
+    email });
 
     if (!updateResult) {
       return res.status(404).json({ error: 'Categoria no encontrada.' });

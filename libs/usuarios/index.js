@@ -58,6 +58,10 @@ module.exports = class Usuario {
     return this.usuarioDao.getByEmail({email});
   }
 
+  async getUsuarioByToken({contraseniaTemporal}) {
+    return this.usuarioDao.getByToken({contraseniaTemporal});
+  }
+
   comparePasswords(rawPassword, dbPassword) {
     return bcrypt.compareSync(rawPassword, dbPassword);
   }
@@ -67,21 +71,39 @@ module.exports = class Usuario {
     avatar,
     password,
     estado,
-    codigo
+    codigo,
+    email
     }) {
     const result = await this.usuarioDao.updateOne({
       codigo,
       nombre,
       avatar,
       password: bcrypt.hashSync(password),
-      estado });
+      estado, 
+      email });
     return {
       nombre,
       avatar,
       estado,
       codigo,
+      email,
       modified: result
     }
+  }
+
+  
+  async updatePass({codigo,password})
+  {
+    const result = await this.usuarioDao.updateContra({codigo,password: bcrypt.hashSync(password)});
+
+    return {codigo,password,modified: result}
+  }
+
+  async aggToken({codigo,contraseniaTemporal})
+  {
+    const result = await this.usuarioDao.aggToken({codigo,contraseniaTemporal});
+
+    return {codigo,contraseniaTemporal,modified: result}
   }
 
   async deleteUsuario({ codigo }) {
